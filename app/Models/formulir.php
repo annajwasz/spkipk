@@ -2,13 +2,17 @@
 
 namespace App\Models;
 
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class formulir extends Model
+class Formulir extends Model
 {
     use HasFactory;
 
     protected $guarded = [];
+
+    protected $casts = [
+        'tgl_pembuatan' => 'date',
+        'status' => 'string'
+    ];
 }

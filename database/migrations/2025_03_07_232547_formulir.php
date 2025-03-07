@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('formulirs', function (Blueprint $table) {
             $table->id();
             $table->string('nama');
-            $table->datetime('tgl_pembuatan');
-            $table->string('kuota');
-            $table->string('status');
+            $table->date('tgl_pembuatan');
+            $table->string('kuota')->nullable();
+            $table->enum('status', ['dibuka', 'ditutup'])->default('dibuka');
             $table->timestamps();
         });
     }

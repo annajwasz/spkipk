@@ -7,6 +7,7 @@ use App\Filament\Resources\FormulirResource\RelationManagers;
 use App\Models\Formulir;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -15,6 +16,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Actions\Action;
 
 class FormulirResource extends Resource
 {
@@ -35,7 +37,12 @@ class FormulirResource extends Resource
                     ->label('Tanggal')
                     ->required(),
                 TextInput::make('kuota'),
-                TextInput::make('status')
+                Select::make('status')
+                    ->options([
+                        'dibuka' => 'Dibuka',
+                        'ditutup' => 'Ditutup'
+                    ])
+                    ->default('dibuka')
                     ->required(),
             ]);
     }
@@ -48,12 +55,27 @@ class FormulirResource extends Resource
                 TextColumn::make('tgl_pembuatan')
                     ->label('Tanggal'),
                 TextColumn::make('kuota'),
-                TextColumn::make('status'),
+                TextColumn::make('status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'dibuka' => 'success',
+                        'ditutup' => 'danger',
+                        default => 'gray',
+                    }),
             ])
             ->filters([
                 //
             ])
             ->actions([
+                Action::make('toggleStatus')
+                    ->label(fn (Formulir $record): string => $record->status === 'dibuka' ? 'Tutup' : 'Buka')
+                    ->icon(fn (Formulir $record): string => $record->status === 'dibuka' ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle')
+                    ->color(fn (Formulir $record): string => $record->status === 'dibuka' ? 'danger' : 'success')
+                    ->action(function (Formulir $record): void {
+                        $record->update([
+                            'status' => $record->status === 'dibuka' ? 'ditutup' : 'dibuka'
+                        ]);
+                    }),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
