@@ -60,6 +60,13 @@ return [
             'report' => false,
         ],
 
+        'berkas' => [
+            'driver' => 'local',
+            'root' => storage_path('app/berkas'),
+            'url' => env('APP_URL').'/storage/berkas',
+            'visibility' => 'public',
+        ],
+
     ],
 
     /*
@@ -75,6 +82,7 @@ return [
 
     'links' => [
         public_path('storage') => storage_path('app/public'),
+        public_path('berkas') => storage_path('app/berkas'),
     ],
 
 ];
