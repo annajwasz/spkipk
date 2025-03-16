@@ -120,7 +120,7 @@ class ParameterResource extends Resource
                             ->default('Cukup Mampu'),
                             
                         FileUpload::make('berkas_1')
-                            ->label('Berkas Bukti 1')
+                            ->label('Berkas Bukti 1(Opsional)')
                             ->disk('berkas')
                             ->directory('ekonomi')
                             ->visibility('public')
@@ -128,7 +128,6 @@ class ParameterResource extends Resource
                             ->downloadable()
                             ->openable()
                             ->acceptedFileTypes(['application/pdf'])
-                            ->required()
                             ->disabled(fn ($context) => $context === 'view'),
                             
                         FileUpload::make('berkas_2')
@@ -282,7 +281,7 @@ class ParameterResource extends Resource
                         'Sangat Kurang Mampu' => 'success',
                         'Kurang Mampu' => 'warning',
                         'Cukup Mampu' => 'danger',
-                        default => 'gray',
+                        'Tidak Menerima Bantuan' => 'gray',
                     }),
                     
                 Tables\Columns\TextColumn::make('status_orang_tua')
@@ -349,6 +348,7 @@ class ParameterResource extends Resource
                         'Sangat Kurang Mampu' => 'Sangat Kurang Mampu',
                         'Kurang Mampu' => 'Kurang Mampu',
                         'Cukup Mampu' => 'Cukup Mampu',
+                        'Tidak Menerima Bantuan' => 'Tidak Menerima Bantuan',
                     ]),
                     
                 Tables\Filters\SelectFilter::make('status_orang_tua')
@@ -604,8 +604,10 @@ class ParameterResource extends Resource
             $data['kondisi_ekonomi'] = 'Sangat Kurang Mampu';
         } elseif ($berkasCount >= 2) {
             $data['kondisi_ekonomi'] = 'Kurang Mampu';
-        } else {
+        } elseif ($berkasCount >= 1) {
             $data['kondisi_ekonomi'] = 'Cukup Mampu';
+        } else {
+            $data['kondisi_ekonomi'] = 'Tidak Menerima Bantuan';
         }
         
         return $data;
@@ -632,8 +634,10 @@ class ParameterResource extends Resource
             $data['kondisi_ekonomi'] = 'Sangat Kurang Mampu';
         } elseif ($berkasCount >= 2) {
             $data['kondisi_ekonomi'] = 'Kurang Mampu';
-        } else {
+        } elseif ($berkasCount >= 1) {
             $data['kondisi_ekonomi'] = 'Cukup Mampu';
+        } else {
+            $data['kondisi_ekonomi'] = 'Tidak Menerima Bantuan';
         }
         
         return $data;

@@ -117,15 +117,15 @@ class WizardForm extends Page
                             Section::make('Upload Berkas Bukti Bantuan Pemerintah')
                                 ->schema([
                                     FileUpload::make('berkas_1')
-                                        ->label('Berkas Bukti 1')
+                                        ->label('Berkas Bukti 1 (Opsional)')
                                         ->disk('berkas')
                                         ->directory('ekonomi')
                                         ->visibility('public')
                                         ->preserveFilenames()
                                         ->downloadable()
                                         ->openable()
-                                        ->acceptedFileTypes(['application/pdf'])
-                                        ->required(),
+                                        ->acceptedFileTypes(['application/pdf']),
+                                        
                                         
                                     FileUpload::make('berkas_2')
                                         ->label('Berkas Bukti 2 (Opsional)')

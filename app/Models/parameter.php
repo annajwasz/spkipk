@@ -38,6 +38,11 @@ class parameter extends Model
         'bukti_wafat_ibu',
         'status',
         'alasan_tidak_valid',
+        'kondisi_ekonomi',
+        'nilai_kondisi_ekonomi',
+        'status_orang_tua',
+        'nilai_status_orang_tua',
+        'total_nilai'
     ];
     
     public function getBerkasKipUrlAttribute()
@@ -79,75 +84,91 @@ class parameter extends Model
     {
         return $this->belongsTo(Mahasiswa::class);
     }
+
     protected static function boot()
     {
         parent::boot();
 
         static::saving(function ($parameter) {
-            // Tentukan status orang tua berdasarkan status ayah dan ibu
-            if ($parameter->status_ayah === 'Wafat' && $parameter->status_ibu === 'Wafat') {
-                $parameter->status_orang_tua = 'Kedua Orang Tua Wafat';
-                $parameter->nilai_status_orang_tua = 0.35;
-            } elseif ($parameter->status_ayah === 'Wafat' || $parameter->status_ibu === 'Wafat') {
-                $parameter->status_orang_tua = 'Salah Satu Orang Tua Wafat';
-                $parameter->nilai_status_orang_tua = 0.25;
-            } else {
-                $parameter->status_orang_tua = 'Kedua Orang Tua Masih Hidup';
-                $parameter->nilai_status_orang_tua = 0.15;
-            }
-
-            // Hitung jumlah berkas yang diupload
-            $berkasCount = 0;
-            if (!empty($parameter->berkas_1)) $berkasCount++;
-            if (!empty($parameter->berkas_2)) $berkasCount++;
-            if (!empty($parameter->berkas_3)) $berkasCount++;
-
-            // Tentukan kondisi ekonomi dan nilai berdasarkan jumlah berkas
-            if ($berkasCount >= 3) {
-                $parameter->kondisi_ekonomi = 'Sangat Kurang Mampu';
-                $parameter->nilai_kondisi_ekonomi = 0.4;
-            } elseif ($berkasCount >= 2) {
-                $parameter->kondisi_ekonomi = 'Kurang Mampu';
-                $parameter->nilai_kondisi_ekonomi = 0.3;
-            } else {
-                $parameter->kondisi_ekonomi = 'Cukup Mampu';
-                $parameter->nilai_kondisi_ekonomi = 0.3;
-            }
-
-            // Hitung total nilai
+            // Ambil semua kriteria dan urutkan berdasarkan prioritas
+            $kriterias = Kriteria::orderBy('prioritas')->get();
             $totalNilai = 0;
 
-            // Nilai dari Kepemilikan KIP
-            if ($parameter->kepemilikan_kip === 'Memiliki KIP') {
-                $totalNilai += 0.6;
-            } else {
-                $totalNilai += 0.4;
+            foreach ($kriterias as $kriteria) {
+                switch ($kriteria->nama) {
+                    case 'Kepemilikan KIP':
+                        // Ambil SubKriteria berdasarkan kepemilikan KIP
+                        $subKriteria = SubKriteria::where('kriteria_id', $kriteria->id)
+                            ->where('nama', $parameter->kepemilikan_kip)
+                            ->first();
+                        if ($subKriteria) {
+                            $totalNilai += $subKriteria->bobot;
+                        }
+                        break;
+
+                    case 'Tingkatan Desil':
+                        // Ambil SubKriteria berdasarkan tingkatan desil
+                        $subKriteria = SubKriteria::where('kriteria_id', $kriteria->id)
+                            ->where('nama', $parameter->tingkatan_desil)
+                            ->first();
+                        if ($subKriteria) {
+                            $totalNilai += $subKriteria->bobot;
+                        }
+                        break;
+
+                    case 'Kondisi Ekonomi':
+                        // Hitung jumlah berkas yang diupload
+                        $berkasCount = 0;
+                        if (!empty($parameter->berkas_1)) $berkasCount++;
+                        if (!empty($parameter->berkas_2)) $berkasCount++;
+                        if (!empty($parameter->berkas_3)) $berkasCount++;
+
+                        // Tentukan kondisi ekonomi berdasarkan jumlah berkas
+                        if ($berkasCount === 0) {
+                            $kondisiEkonomi = 'Tidak Menerima Bantuan';
+                        } elseif ($berkasCount >= 3) {
+                            $kondisiEkonomi = 'Sangat Kurang Mampu';
+                        } elseif ($berkasCount === 2) {
+                            $kondisiEkonomi = 'Kurang Mampu';
+                        } else {
+                            $kondisiEkonomi = 'Cukup Mampu';
+                        }
+
+                        // Set kondisi ekonomi
+                        $parameter->kondisi_ekonomi = $kondisiEkonomi;
+
+                        // Ambil SubKriteria berdasarkan kondisi ekonomi
+                        $subKriteria = SubKriteria::where('kriteria_id', $kriteria->id)
+                            ->where('nama', $kondisiEkonomi)
+                            ->first();
+                        if ($subKriteria) {
+                            $totalNilai += $subKriteria->bobot;
+                        }
+                        break;
+
+                    case 'Status Orang Tua':
+                        // Tentukan status orang tua
+                        if ($parameter->status_ayah === 'Wafat' && $parameter->status_ibu === 'Wafat') {
+                            $statusOrangTua = 'Kedua Orang Tua Wafat';
+                        } elseif ($parameter->status_ayah === 'Wafat' || $parameter->status_ibu === 'Wafat') {
+                            $statusOrangTua = 'Salah Satu Orang Tua Wafat';
+                        } else {
+                            $statusOrangTua = 'Kedua Orang Tua Masih Hidup';
+                        }
+
+                        // Set status orang tua
+                        $parameter->status_orang_tua = $statusOrangTua;
+
+                        // Ambil SubKriteria berdasarkan status orang tua
+                        $subKriteria = SubKriteria::where('kriteria_id', $kriteria->id)
+                            ->where('nama', $statusOrangTua)
+                            ->first();
+                        if ($subKriteria) {
+                            $totalNilai += $subKriteria->bobot;
+                        }
+                        break;
+                }
             }
-
-            // Nilai dari Tingkatan Desil
-            switch ($parameter->tingkatan_desil) {
-                case 'Desil 1':
-                    $totalNilai += 0.35;
-                    break;
-                case 'Desil 2':
-                    $totalNilai += 0.25;
-                    break;
-                case 'Desil 3':
-                    $totalNilai += 0.20;
-                    break;
-                case 'Desil 4':
-                    $totalNilai += 0.15;
-                    break;
-                case 'Desil 5':
-                    $totalNilai += 0.05;
-                    break;
-            }
-
-            // Tambahkan nilai kondisi ekonomi
-            $totalNilai += $parameter->nilai_kondisi_ekonomi;
-
-            // Tambahkan nilai status orang tua
-            $totalNilai += $parameter->nilai_status_orang_tua;
 
             $parameter->total_nilai = $totalNilai;
         });

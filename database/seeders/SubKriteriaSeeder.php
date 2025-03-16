@@ -71,14 +71,14 @@ class SubKriteriaSeeder extends Seeder
             [
                 'kriteria_id' => 3,
                 'nama' => 'Sangat Kurang Mampu',
-                'deskripsi' => 'Penghasilan dibawah UMR',
+                'deskripsi' => 'Memiliki lebih dari 2 bantuan pemerintah',
                 'prioritas' => 1,
                 'bobot' => 0.4,
             ],
             [
                 'kriteria_id' => 3,
                 'nama' => 'Kurang Mampu',
-                'deskripsi' => 'Penghasilan setara UMR',
+                'deskripsi' => 'Memiliki 2 bantuan pemerintah',
                 'prioritas' => 2,
                 'bobot' => 0.3,
             ],
