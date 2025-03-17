@@ -42,7 +42,8 @@ class parameter extends Model
         'nilai_kondisi_ekonomi',
         'status_orang_tua',
         'nilai_status_orang_tua',
-        'total_nilai'
+        'total_nilai',
+        'hasil'
     ];
     
     public function getBerkasKipUrlAttribute()
@@ -171,6 +172,15 @@ class parameter extends Model
             }
 
             $parameter->total_nilai = $totalNilai;
+
+            // Tentukan hasil berdasarkan total nilai
+            if ($totalNilai >= 0.75) {
+                $parameter->hasil = 'Layak';
+            } elseif ($totalNilai >= 0.5) {
+                $parameter->hasil = 'Dipertimbangkan';
+            } else {
+                $parameter->hasil = 'Tidak Layak';
+            }
         });
     }
 }

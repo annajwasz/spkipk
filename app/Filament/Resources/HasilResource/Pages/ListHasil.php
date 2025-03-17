@@ -3,10 +3,9 @@
 namespace App\Filament\Resources\HasilResource\Pages;
 
 use App\Filament\Resources\HasilResource;
-use Filament\Actions;
-use Filament\Resources\Pages\CreateRecord;
+use Filament\Resources\Pages\ListRecords;
 
-class CreateHasil extends CreateRecord
+class ListHasil extends ListRecords
 {
     protected static string $resource = HasilResource::class;
-}
+} 

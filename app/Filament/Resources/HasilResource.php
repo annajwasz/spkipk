@@ -3,103 +3,135 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\HasilResource\Pages;
-use App\Filament\Resources\HasilResource\RelationManagers;
-use App\Models\Hasil;
-use Filament\Forms;
+use App\Models\Parameter;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
+use Illuminate\Support\Facades\DB;
 
 class HasilResource extends Resource
 {
-    protected static ?string $model = Hasil::class;
+    protected static ?string $model = Parameter::class;
+    public static $kuota = 0;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-check';
     protected static ?string $navigationGroup = 'Penilaian';
+    protected static ?string $navigationLabel = 'Hasil Penilaian';
     protected static ?int $navigationSort = 2;
-
-    public static function form(Form $form): Form
-    {
-        return $form
-            ->schema([
-                Select::make('mahasiswa_id')
-                    ->label('Mahasiswa')
-                    ->relationship('mahasiswa', 'nama')
-                    ->searchable()
-                    ->required(),
-
-                TextInput::make('total_bobot')
-                    ->label('Total Bobot')
-                    ->numeric()
-                    ->readOnly(),
-
-                Select::make('status')
-                    ->label('Status')
-                    ->options([
-                        'Layak' => 'Layak',
-                        'Dipertimbangkan' => 'Dipertimbangkan',
-                        'Tidak Layak' => 'Tidak Layak',
-                    ])
-                    ->required(),
-            ]);
-    }
+    protected static ?string $slug = 'hasil-penilaian';
+    
+    protected static ?string $modelLabel = 'Hasil Penilaian';
+    protected static ?string $pluralModelLabel = 'Hasil Penilaian';
+    protected static ?string $breadcrumb = 'Hasil Penilaian';
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
-                    TextColumn::make('mahasiswa.nama')
-                        ->label('Nama Mahasiswa')
-                        ->sortable()
-                        ->searchable(),
-    
-                    TextColumn::make('total_bobot')
-                        ->label('Total Bobot')
-                        ->sortable(),
-    
-                    TextColumn::make('status')
-                        ->label('Status')
-                        ->badge()
-                        ->color(fn ($record) => match ($record->status) {
-                            'Layak' => 'success',
-                            'Dipertimbangkan' => 'warning',
-                            'Tidak Layak' => 'danger',
-                        }),
-                
-               
-            ])
-            ->filters([
-                //
-            ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
-    }
+            ->headerActions([
+                Tables\Actions\Action::make('setKuota')
+                    ->label('Set Kuota Penerimaan')
+                    ->form([
+                        TextInput::make('kuota')
+                            ->label('Jumlah Kuota')
+                            ->numeric()
+                            ->required()
+                            ->minValue(1)
+                            ->helperText('Masukkan jumlah kuota penerimaan. Hanya mahasiswa dengan nilai tertinggi dan berkas valid yang akan diterima.'),
+                    ])
+                    ->action(function (array $data): void {
+                        DB::beginTransaction();
+                        try {
+                            // Reset semua hasil terlebih dahulu
+                            Parameter::query()->update(['hasil' => 'Tidak Layak']);
 
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
+                            // Ambil semua data parameter yang valid dan urutkan berdasarkan total nilai
+                            $validParameters = Parameter::where('status', 'valid')
+                                ->orderBy('total_nilai', 'desc')
+                                ->get();
+
+                            $kuota = (int) $data['kuota'];
+                            $index = 0;
+
+                            foreach ($validParameters as $parameter) {
+                                // Gunakan update langsung ke database untuk memastikan perubahan tersimpan
+                                if ($index < $kuota) {
+                                    DB::table('parameters')
+                                        ->where('id', $parameter->id)
+                                        ->update(['hasil' => 'Layak']);
+                                } elseif ($index < ($kuota + 3)) {
+                                    DB::table('parameters')
+                                        ->where('id', $parameter->id)
+                                        ->update(['hasil' => 'Dipertimbangkan']);
+                                }
+                                $index++;
+                            }
+
+                            DB::commit();
+
+                            Notification::make()
+                                ->title("Berhasil mengatur kuota penerimaan untuk {$kuota} mahasiswa")
+                                ->success()
+                                ->send();
+                        } catch (\Exception $e) {
+                            DB::rollBack();
+                            Notification::make()
+                                ->title('Terjadi kesalahan: ' . $e->getMessage())
+                                ->danger()
+                                ->send();
+                        }
+                    })
+                    ->requiresConfirmation()
+                    ->modalHeading('Set Kuota Penerimaan')
+                    ->modalDescription('Apakah Anda yakin ingin mengatur kuota penerimaan? Tindakan ini akan mengubah status kelayakan semua mahasiswa.')
+                    ->modalSubmitActionLabel('Ya, Set Kuota')
+                    ->successNotificationTitle('Kuota berhasil diatur'),
+            ])
+            ->modifyQueryUsing(fn ($query) => $query->where('status', 'valid'))
+            ->columns([
+                TextColumn::make('no')
+                    ->label('No.')
+                    ->rowIndex(false)
+                    ->alignCenter(),
+                    
+                TextColumn::make('mahasiswa.nama')
+                    ->label('Nama Mahasiswa')
+                    ->searchable()
+                    ->sortable(),
+                    
+                TextColumn::make('total_nilai')
+                    ->label('Total Nilai')
+                    ->formatStateUsing(fn ($state) => number_format($state, 4))
+                    ->sortable(),
+                    
+                TextColumn::make('hasil')
+                    ->label('Hasil')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'Layak' => 'success',
+                        'Dipertimbangkan' => 'warning',
+                        'Tidak Layak' => 'danger',
+                        default => 'gray',
+                    }),
+            ])
+            ->defaultSort('total_nilai', 'desc')
+            ->filters([
+                Tables\Filters\SelectFilter::make('hasil')
+                    ->options([
+                        'Layak' => 'Layak',
+                        'Dipertimbangkan' => 'Dipertimbangkan',
+                        'Tidak Layak' => 'Tidak Layak',
+                    ]),
+            ]);
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListHasils::route('/'),
-            'create' => Pages\CreateHasil::route('/create'),
-            'edit' => Pages\EditHasil::route('/{record}/edit'),
+            'index' => Pages\ListHasil::route('/'),
         ];
     }
-}
+} 
