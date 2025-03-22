@@ -30,7 +30,10 @@ class ParameterResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
     
-    protected static ?string $navigationLabel = 'Form Penilaian KIP-K';
+    protected static ?string $navigationLabel = 'Perangkingan';
+    protected static ?string $modelLabel = 'Perangkingan';
+    protected static ?string $pluralModelLabel = 'Perangkingan';
+    protected static ?string $breadcrumb = 'Perangkingan';
     
     protected static ?string $navigationGroup = 'Penilaian';
     

@@ -22,7 +22,7 @@ class FormulirResource extends Resource
 {
     protected static ?string $model = Formulir::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document';
     protected static ?string $navigationGroup = 'Data Master';
     protected static ?string $slug = 'daftar-formulir';
     protected static ?int $navigationSort = 5;
