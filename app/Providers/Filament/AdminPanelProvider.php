@@ -29,6 +29,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->registration()
             // ->brandName('POLIJE')
             ->brandLogo(asset('images/logo-polije.png'))
             ->brandLogoHeight('3rem')
