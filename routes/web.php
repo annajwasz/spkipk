@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\PdfViewController;
+use App\Http\Controllers\PengumumanController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -23,3 +24,7 @@ Route::get('/storage/berkas/{path}', function ($path) {
         'Content-Disposition' => 'inline; filename="' . basename($path) . '"'
     ]);
 })->where('path', '.*');
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/pengumuman', [PengumumanController::class, 'show'])->name('pengumuman');
+});
