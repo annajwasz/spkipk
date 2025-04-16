@@ -30,10 +30,7 @@ class ParameterResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
     
-    protected static ?string $navigationLabel = 'Perangkingan';
-    protected static ?string $modelLabel = 'Perangkingan';
-    protected static ?string $pluralModelLabel = 'Perangkingan';
-    protected static ?string $breadcrumb = 'Perangkingan';
+    protected static ?string $navigationLabel = 'Form Penilaian KIP-K';
     
     protected static ?string $navigationGroup = 'Penilaian';
     
@@ -300,6 +297,16 @@ class ParameterResource extends Resource
                 Tables\Columns\TextColumn::make('total_nilai')
                     ->label('Total Nilai')
                     ->sortable(),
+                    
+                Tables\Columns\TextColumn::make('hasil')
+                    ->label('Hasil')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'Layak' => 'success',
+                        'Dipertimbangkan' => 'warning',
+                        'Tidak Layak' => 'danger',
+                        default => 'gray',
+                    }),
                     
                 Tables\Columns\TextColumn::make('status')
                     ->label('Status Validasi')

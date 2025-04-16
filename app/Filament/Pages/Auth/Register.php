@@ -3,10 +3,21 @@
 namespace App\Filament\Pages\Auth;
 
 use Filament\Pages\Auth\Register as BaseRegister;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
 
 class Register extends BaseRegister
 {
-    // Kustomisasi form registrasi jika diperlukan
+    public ?array $data = [];
+
+    protected function handleRegistration(array $data): Model
+    {
+        $user = parent::handleRegistration($data);
+        $user->assignRole('mahasiswa');
+        return $user;
+    }
+
     protected function getForms(): array
     {
         return [
@@ -22,4 +33,4 @@ class Register extends BaseRegister
             ),
         ];
     }
-} 
+}

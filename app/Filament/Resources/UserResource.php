@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\Select;
 
 class UserResource extends Resource
 {
@@ -44,7 +45,12 @@ class UserResource extends Resource
                 TextInput::make('password')
                     ->password()
                     ->required()
-                    // ->hiddenOn('edit'),
+                    ->hiddenOn('edit'),
+                Select::make('roles')
+                    ->multiple()
+                    ->relationship('roles', 'name')
+                    ->preload()
+                    ->helperText('Biarkan kosong untuk role default (mahasiswa)'),
             ]);
     }
 
@@ -58,6 +64,9 @@ class UserResource extends Resource
                 TextColumn::make('email')
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('roles.name')
+                    ->badge()
+                    ->color('primary'),
                 TextColumn::make('password'),
                 TextColumn::make('created_at')
                     ->dateTime()

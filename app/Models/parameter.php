@@ -118,11 +118,11 @@ class parameter extends Model
                         break;
 
                     case 'Kondisi Ekonomi':
-                        // Hitung jumlah berkas yang diupload
-                        $berkasCount = 0;
-                        if (!empty($parameter->berkas_1)) $berkasCount++;
-                        if (!empty($parameter->berkas_2)) $berkasCount++;
-                        if (!empty($parameter->berkas_3)) $berkasCount++;
+            // Hitung jumlah berkas yang diupload
+            $berkasCount = 0;
+            if (!empty($parameter->berkas_1)) $berkasCount++;
+            if (!empty($parameter->berkas_2)) $berkasCount++;
+            if (!empty($parameter->berkas_3)) $berkasCount++;
 
                         // Tentukan kondisi ekonomi berdasarkan jumlah berkas
                         if ($berkasCount === 0) {
@@ -131,7 +131,7 @@ class parameter extends Model
                             $kondisiEkonomi = 'Sangat Kurang Mampu';
                         } elseif ($berkasCount === 2) {
                             $kondisiEkonomi = 'Kurang Mampu';
-                        } else {
+            } else {
                             $kondisiEkonomi = 'Cukup Mampu';
                         }
 
@@ -153,7 +153,7 @@ class parameter extends Model
                             $statusOrangTua = 'Kedua Orang Tua Wafat';
                         } elseif ($parameter->status_ayah === 'Wafat' || $parameter->status_ibu === 'Wafat') {
                             $statusOrangTua = 'Salah Satu Orang Tua Wafat';
-                        } else {
+            } else {
                             $statusOrangTua = 'Kedua Orang Tua Masih Hidup';
                         }
 
@@ -167,7 +167,7 @@ class parameter extends Model
                         if ($subKriteria) {
                             $totalNilai += $subKriteria->bobot;
                         }
-                        break;
+                    break;
                 }
             }
 

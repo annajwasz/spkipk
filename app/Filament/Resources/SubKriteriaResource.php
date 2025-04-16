@@ -52,12 +52,10 @@ class SubKriteriaResource extends Resource
                     ->required(),
                 TextInput::make('prioritas')
                     ->numeric()
-                    ->required()
-                    ->label('Prioritas (Urutan)')
-                    ->helperText('Masukkan angka prioritas (1 untuk prioritas tertinggi)'),
+                    ->required(),
                 TextInput::make('bobot')
-                    ->disabled()
-                    ->helperText('Bobot akan dihitung otomatis menggunakan metode SMARTER'),
+                    ->numeric()
+                    // ->required(),
             ]);
     }
 
@@ -77,14 +75,10 @@ class SubKriteriaResource extends Resource
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('prioritas')
-                    ->label('Prioritas')
                     ->sortable(),
                 TextColumn::make('bobot')
-                    ->label('Bobot')
-                    ->formatStateUsing(fn ($state) => number_format($state, 4))
                     ->sortable(),
             ])
-            ->defaultSort('kriteria_id', 'prioritas')
             ->filters([
                 //
             ])

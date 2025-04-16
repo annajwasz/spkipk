@@ -32,16 +32,11 @@ class KriteriaResource extends Resource
         return $form
             ->schema([
                 TextInput::make('nama')
-                    ->required()
-                    ->label('Nama Kriteria'),
+                    ->required(),//kolom wajib diisi
                 TextInput::make('prioritas')
-                    ->numeric()
-                    ->required()
-                    ->label('Prioritas (Urutan)')
-                    ->helperText('Masukkan angka prioritas (1 untuk prioritas tertinggi)'),
+                    ->required(),
                 TextInput::make('bobot')
-                    ->disabled()
-                    ->helperText('Bobot akan dihitung otomatis menggunakan metode SMARTER'),
+                    // ->required(),
             ]);
     }
 
@@ -50,19 +45,14 @@ class KriteriaResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('nama')
-                    ->label('Nama Kriteria')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('prioritas')
-                    ->label('Prioritas')
-                    ->sortable(),
-                TextColumn::make('bobot')
-                    ->label('Bobot')
-                    ->formatStateUsing(fn ($state) => number_format($state, 4))
-                    ->sortable(),
+                    ->searchable(),
+                TextColumn::make('prioritas'),
+                TextColumn::make('bobot'),
+                
             ])
-            ->defaultSort('prioritas')
-            ->filters([])
+            ->filters([
+                //
+            ])
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
