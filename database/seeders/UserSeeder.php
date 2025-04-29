@@ -18,12 +18,15 @@ class UserSeeder extends Seeder
 
         // Cek apakah email sudah ada
         if (!User::where('email', 'najwa@admin.com')->exists()) {
-            User::create([
+            $user = User::create([
                 'name' => 'Najwa',
                 'email' => 'najwa@admin.com',
                 'password' => Hash::make('12345678'),
                 'email_verified_at' => now()
             ]);
+
+            // Berikan role super_admin
+            $user->assignRole('super_admin');
         }
 
         // Tambahkan user lain jika diperlukan

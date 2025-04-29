@@ -68,7 +68,7 @@ return [
         'enabled' => true,
 
         'pages' => [
-            'Dashboard',
+            // Hapus Dashboard dari sini
         ],
 
         'widgets' => [

@@ -6,10 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    public function up()
     {
         Schema::create('parameters', function (Blueprint $table) {
             $table->id();
@@ -37,14 +34,17 @@ return new class extends Migration
             ]);
             
             // Untuk Kriteria 3: Kondisi Ekonomi
-            $table->enum('kondisi_ekonomi', ['Sangat Kurang Mampu', 'Kurang Mampu', 'Cukup Mampu']);
+            $table->enum('kondisi_ekonomi', [
+                'Sangat Kurang Mampu', 
+                'Kurang Mampu', 
+                'Cukup Mampu',
+                'Tidak Menerima Bantuan'
+            ]);
             
             // Berkas untuk Kondisi Ekonomi
             $table->string('berkas_1')->nullable(); // Untuk semua kondisi
             $table->string('berkas_2')->nullable(); // Untuk Kurang Mampu & Sangat Kurang Mampu
             $table->string('berkas_3')->nullable();  // Untuk Kurang Mampu & Sangat Kurang Mampu
-            // $table->string('berkas_pkh')->nullable();  // Khusus Sangat Kurang Mampu
-            // $table->string('berkas_kks')->nullable();  // Khusus Sangat Kurang Mampu
 
             // Untuk Kriteria 4: Status Orang tua
             $table->enum('status_orang_tua', [
@@ -60,27 +60,30 @@ return new class extends Migration
             // Bukti kematian orang tua
             $table->string('bukti_wafat_ayah')->nullable();
             $table->string('bukti_wafat_ibu')->nullable();
+
+            // Status form
+            $table->enum('status', ['belum_validasi', 'valid','tidak_valid'])->default('belum_validasi');
             
-            // // Untuk menyimpan nilai perhitungan
+            // Alasan tidak valid
+            $table->text('alasan_tidak_valid')->nullable();
+
+            // Untuk menyimpan nilai perhitungan
             $table->decimal('nilai_kepemilikan_kip', 10, 7)->default(0);
             $table->decimal('nilai_tingkatan_desil', 10, 7)->default(0);
             $table->decimal('nilai_kondisi_ekonomi', 10, 7)->default(0);
             $table->decimal('nilai_status_orang_tua', 10, 7)->default(0);
             $table->decimal('total_nilai', 10, 7)->default(0);
             
-            // Status form
-            // $table->enum('status', ['draft', 'submitted'])->default('draft');
-            $table->enum('status', ['belum_validasi', 'valid','tidak_valid'])->default('belum_validasi');
+            // Hasil penilaian
+            $table->enum('hasil', ['Layak', 'Dipertimbangkan', 'Tidak Layak'])->nullable();
+            
             
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
         Schema::dropIfExists('parameters');
     }
-};
+}; 

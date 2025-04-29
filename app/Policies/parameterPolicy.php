@@ -105,12 +105,4 @@ class ParameterPolicy
     {
         return $user->can('reorder_pengumuman');
     }
-
-    public function show()
-    {
-        $pengumuman = Parameter::where('mahasiswa_id', auth()->user()->mahasiswa->id)
-            ->first();
-
-        return view('pengumuman', compact('pengumuman'));
-    }
 }
