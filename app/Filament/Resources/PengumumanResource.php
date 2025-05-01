@@ -10,6 +10,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ViewColumn;
+use Illuminate\Database\Eloquent\Builder; // Add this line
 
 class PengumumanResource extends Resource
 {
@@ -20,7 +21,7 @@ class PengumumanResource extends Resource
     protected static ?string $navigationLabel = 'Pengumuman';
     protected static ?int $navigationSort = 3;
     protected static ?string $slug = 'pengumuman';
-    
+
     protected static ?string $modelLabel = 'Pengumuman';
     protected static ?string $pluralModelLabel = 'Pengumuman';
     protected static ?string $breadcrumb = 'Pengumuman';
@@ -33,7 +34,7 @@ class PengumumanResource extends Resource
                     ->label('Nama Mahasiswa')
                     ->searchable()
                     ->sortable(),
-                    
+
                 TextColumn::make('status')
                     ->label('Status Berkas')
                     ->badge()
@@ -43,7 +44,7 @@ class PengumumanResource extends Resource
                         'belum_validasi' => 'warning',
                         default => 'gray',
                     }),
-                    
+
                 TextColumn::make('hasil')
                     ->label('Hasil Seleksi')
                     ->badge()
@@ -53,12 +54,19 @@ class PengumumanResource extends Resource
                         'Tidak Layak' => 'danger',
                         default => 'gray',
                     }),
-                    
+
                 ViewColumn::make('keterangan')
                     ->label('Keterangan')
                     ->view('filament.tables.columns.keterangan-pengumuman'),
             ])
-            ->defaultSort('total_nilai', 'desc');
+            ->defaultSort('total_nilai', 'desc')
+            ->modifyQueryUsing(function (Builder $query): Builder {
+                $user = auth()->user();
+                if ($user->roles[0]->name == 'Mahasiswa') {
+                    return $query->where('mahasiswa_id', $user->id);
+                }
+                return $query;
+            });
     }
 
     public static function getPages(): array
@@ -67,4 +75,4 @@ class PengumumanResource extends Resource
             'index' => Pages\ListPengumuman::route('/'),
         ];
     }
-} 
+}
