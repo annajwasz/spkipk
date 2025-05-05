@@ -16,10 +16,11 @@ class TestWidget extends BaseWidget
         return [
             Stat::make('Kriteria', Kriteria::count()),
             Stat::make('SubKriteria', Subkriteria::count()),
-            Stat::make('Jumlah Pendaftar', Mahasiswa::count())
+            Stat::make('Jumlah Pendaftar', Mahasiswa::has('parameter')->count())
                 ->description('Total Mahasiswa yang telah mendaftar')
                 ->color('info')
-                ->chart(Mahasiswa::selectRaw('DATE(created_at) as date, COUNT(*) as total')
+                ->chart(Mahasiswa::has('parameter')
+                    ->selectRaw('DATE(created_at) as date, COUNT(*) as total')
                     ->groupBy('date')
                     ->orderBy('date')
                     ->pluck('total')

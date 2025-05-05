@@ -13,7 +13,7 @@ class Dashboard extends \Filament\Pages\Dashboard
     {
         /** @var User $user */
         $user = Auth::user();
-        if ($user->hasRole('Mahasiswa')) { {
+        if ($user->hasRole('mahasiswa')) { {
                 return [
                     \App\Filament\Widgets\CustomAccountWidget::class,
                 ];

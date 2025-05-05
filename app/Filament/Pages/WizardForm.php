@@ -32,6 +32,18 @@ class WizardForm extends Page
 
     public function mount(): void
     {
+        // Cek apakah mahasiswa sudah pernah mengisi form
+        $mahasiswa = Mahasiswa::where('user_id', auth()->id())->first();
+        if ($mahasiswa && $mahasiswa->parameter) {
+            Notification::make()
+                ->warning()
+                ->title('Peringatan')
+                ->body('Anda sudah pernah mengisi form pendaftaran KIP-K')
+                ->send();
+            
+            $this->redirect('/admin/');
+        }
+
         $this->form->fill();
     }
 
@@ -216,6 +228,7 @@ class WizardForm extends Page
         try {
             // Simpan data mahasiswa
             $mahasiswa = Mahasiswa::create([
+                'user_id' => auth()->id(),
                 'noreg_kipk' => $data['noreg_kipk'],
                 'nama' => $data['nama'],
                 'nim' => $data['nim'],
@@ -254,7 +267,7 @@ class WizardForm extends Page
                 ->body('Data berhasil disimpan')
                 ->send();
 
-            $this->redirect('/admin/parameters');
+            $this->redirect('/admin/');
 
         } catch (\Exception $e) {
             DB::rollBack();

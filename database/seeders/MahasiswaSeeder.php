@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Mahasiswa;
+use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -13,6 +14,9 @@ class MahasiswaSeeder extends Seeder
      */
     public function run(): void
     {
+        // Ambil user dengan role mahasiswa
+        $users = User::role('mahasiswa')->get();
+
         $mahasiswas = [
             [
                 'noreg_kipk' => 'KIP001',
@@ -52,8 +56,12 @@ class MahasiswaSeeder extends Seeder
             ],
         ];
 
-        foreach ($mahasiswas as $mahasiswa) {
-            Mahasiswa::create($mahasiswa);
+        foreach ($users as $index => $user) {
+            if (isset($mahasiswas[$index])) {
+                Mahasiswa::create(array_merge($mahasiswas[$index], [
+                    'user_id' => $user->id
+                ]));
+            }
         }
     }
 }

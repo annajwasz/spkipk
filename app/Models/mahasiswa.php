@@ -10,4 +10,9 @@ class Mahasiswa extends Model
     use HasFactory;
 
     protected $guarded = [];
+
+    public function parameter()
+    {
+        return $this->hasOne(Parameter::class);
+    }
 }

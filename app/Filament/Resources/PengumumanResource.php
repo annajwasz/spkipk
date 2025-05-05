@@ -10,7 +10,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ViewColumn;
-use Illuminate\Database\Eloquent\Builder; // Add this line
+use Illuminate\Database\Eloquent\Builder;
 
 class PengumumanResource extends Resource
 {

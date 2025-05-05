@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
             KriteriaSeeder::class,
             SubKriteriaSeeder::class,
             MahasiswaSeeder::class,
-            SuperAdminPermissionSeeder::class,
+            // SuperAdminPermissionSeeder::class,
             PermissionSeeder::class,
         ]);
     }

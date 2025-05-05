@@ -17,15 +17,22 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Actions\Action;
+use Illuminate\Support\Facades\Auth;
 
 class FormulirResource extends Resource
 {
     protected static ?string $model = Formulir::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document';
-    protected static ?string $navigationGroup = 'Data Master';
-    protected static ?string $slug = 'daftar-formulir';
     protected static ?int $navigationSort = 5;
+    protected static ?string $slug = 'daftar-formulir';
+
+    public static function getNavigationGroup(): ?string
+    {
+        return auth()->user()->roles[0]->name === 'mahasiswa' 
+            ? null 
+            : 'Data Master';
+    }
 
     public static function form(Form $form): Form
     {
@@ -74,6 +81,13 @@ class FormulirResource extends Resource
                     ->url(fn (Formulir $record): string => '/admin/wizard-form')
                     ->openUrlInNewTab(false)
                     ->visible(fn (Formulir $record): bool => $record->status === 'dibuka'),
+                Action::make('info')
+                    ->label('Info')
+                    ->icon('heroicon-o-information-circle')
+                    ->color('warning')
+                    ->url(fn (): string => '/admin/progres-data-page')
+                    ->openUrlInNewTab(false)
+                    ->visible(fn (): bool => Auth::user()->hasRole('mahasiswa')),
                 Action::make('toggleStatus')
                     ->label(fn (Formulir $record): string => $record->status === 'dibuka' ? 'Tutup' : 'Buka')
                     ->icon(fn (Formulir $record): string => $record->status === 'dibuka' ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle')
@@ -82,7 +96,8 @@ class FormulirResource extends Resource
                         $record->update([
                             'status' => $record->status === 'dibuka' ? 'ditutup' : 'dibuka'
                         ]);
-                    }),
+                    })
+                    ->visible(fn (): bool => Auth::user()->hasRole('super_admin')),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
