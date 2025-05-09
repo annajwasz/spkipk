@@ -30,11 +30,13 @@ class ParameterResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
     
-    protected static ?string $navigationLabel = 'Form Penilaian KIP-K';
+    protected static ?string $navigationLabel = 'Validasi Data';
     
     protected static ?string $navigationGroup = 'Penilaian';
     
     protected static ?int $navigationSort = 1;
+
+    protected static ?string $title = 'Validasi Data';
 
     public static function form(Form $form): Form
     {
@@ -298,15 +300,15 @@ class ParameterResource extends Resource
                     ->label('Total Nilai')
                     ->sortable(),
                     
-                Tables\Columns\TextColumn::make('hasil')
-                    ->label('Hasil')
-                    ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'Layak' => 'success',
-                        'Dipertimbangkan' => 'warning',
-                        'Tidak Layak' => 'danger',
-                        default => 'gray',
-                    }),
+                // Tables\Columns\TextColumn::make('hasil')
+                //     ->label('Hasil')
+                //     ->badge()
+                //     ->color(fn (string $state): string => match ($state) {
+                //         'Layak' => 'success',
+                //         'Dipertimbangkan' => 'warning',
+                //         'Tidak Layak' => 'danger',
+                //         default => 'gray',
+                //     }),
                     
                 Tables\Columns\TextColumn::make('status')
                     ->label('Status Validasi')

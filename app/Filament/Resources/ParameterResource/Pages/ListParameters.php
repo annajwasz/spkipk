@@ -10,6 +10,8 @@ class ListParameters extends ListRecords
 {
     protected static string $resource = ParameterResource::class;
 
+    protected static ?string $title = 'Validasi Data';
+
     protected function getHeaderActions(): array
     {
         return [

@@ -4,6 +4,8 @@ namespace App\Filament\Pages;
 
 use App\Models\Parameter;
 use App\Models\Mahasiswa;
+use App\Models\Jurusan;
+use App\Models\Prodi;
 use Filament\Forms\Components\Wizard;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
@@ -57,10 +59,36 @@ class WizardForm extends Page
                             TextInput::make('noreg_kipk')->label('No. Registrasi KIP-K')->required(),
                             TextInput::make('nama')->label('Nama Lengkap')->required(),
                             TextInput::make('nim')->label('NIM')->required(),
-                            TextInput::make('jurusan')->label('Jurusan')->required(),
-                            TextInput::make('prodi')->label('Program Studi')->required(),
+                            Select::make('jurusan_id')
+                                ->label('Jurusan')
+                                ->options(Jurusan::all()->pluck('nama', 'id'))
+                                ->required()
+                                ->reactive()
+                                ->afterStateUpdated(fn (callable $set) => $set('prodi_id', null)),
+                            Select::make('prodi_id')
+                                ->label('Program Studi')
+                                ->options(function (callable $get) {
+                                    $jurusanId = $get('jurusan_id');
+                                    if (!$jurusanId) {
+                                        return [];
+                                    }
+                                    return Prodi::where('jurusan_id', $jurusanId)
+                                        ->pluck('nama', 'id');
+                                })
+                                ->required()
+                                ->reactive()
+                                ->afterStateUpdated(function (callable $set, callable $get) {
+                                    $prodiId = $get('prodi_id');
+                                    if ($prodiId) {
+                                        $prodi = Prodi::find($prodiId);
+                                        $set('akreditasi', $prodi->akreditasi);
+                                    }
+                                }),
+                            TextInput::make('akreditasi')
+                                ->label('Akreditasi Prodi')
+                                ->disabled()
+                                ->required(),
                             TextInput::make('angkatan')->label('Angkatan')->required(),
-                            TextInput::make('semester')->label('Semester')->required(),
                             TextInput::make('jalur_masuk')->label('Jalur Masuk')->required(),
                             TextInput::make('ponsel')->label('No. Handphone')->tel()->required(),
                             TextInput::make('alamat')->label('Alamat')->required(),
@@ -231,11 +259,11 @@ class WizardForm extends Page
                 'user_id' => auth()->id(),
                 'noreg_kipk' => $data['noreg_kipk'],
                 'nama' => $data['nama'],
-                'nim' => $data['nim'],
-                'jurusan' => $data['jurusan'],
-                'prodi' => $data['prodi'],
+                'NIM' => $data['nim'],
+                'jurusan_id' => $data['jurusan_id'],
+                'prodi_id' => $data['prodi_id'],
+                'akreditasi' => $data['akreditasi'] ?? Prodi::find($data['prodi_id'])->akreditasi,
                 'angkatan' => $data['angkatan'],
-                'semester' => $data['semester'],
                 'jalur_masuk' => $data['jalur_masuk'],
                 'ponsel' => $data['ponsel'],
                 'alamat' => $data['alamat'],

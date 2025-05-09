@@ -17,10 +17,10 @@ return new class extends Migration
             $table->string('noreg_kipk');
             $table->string('nama');
             $table->string('NIM');
-            $table->string('jurusan');
-            $table->string('prodi');
+            $table->foreignId('jurusan_id')->constrained('jurusans')->cascadeOnDelete();
+            $table->foreignId('prodi_id')->constrained('prodis')->cascadeOnDelete();
+            $table->string('akreditasi');
             $table->string('angkatan');
-            $table->string('semester');
             $table->string('jalur_masuk');
             $table->string('ponsel');
             $table->string('alamat');

@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\Select;
 
 class MahasiswaResource extends Resource
 {
@@ -39,14 +40,19 @@ class MahasiswaResource extends Resource
                 TextInput::make('NIM')
                     ->label('NIM')
                     ->required(),
-                TextInput::make('jurusan')
+                Select::make('jurusan_id')
+                    ->label('Jurusan')
+                    ->relationship('jurusan', 'nama')
                     ->required(),
-                TextInput::make('prodi')
+                Select::make('prodi_id')
                     ->label('Program Studi')
+                    ->relationship('prodi', 'nama')
+                    ->required(),
+                Select::make('akreditasi')
+                    ->label('Akreditasi Program Studi')
+                    ->relationship('prodi', 'akreditasi')
                     ->required(),
                 TextInput::make('angkatan')
-                    ->required(),
-                TextInput::make('semester')
                     ->required(),
                 TextInput::make('jalur_masuk')
                     ->required(),
@@ -68,11 +74,10 @@ class MahasiswaResource extends Resource
                     // ->shortable(), //biar urut berdasarkan abjad
                 TextColumn::make('NIM')
                     ->label('NIM'),
-                TextColumn::make('jurusan'),
-                TextColumn::make('prodi')
-                    ->label('Program Studi'),
+                TextColumn::make('jurusan.nama')->label('Jurusan'),
+                TextColumn::make('prodi.nama')->label('Program Studi'),
+                TextColumn::make('prodi.akreditasi')->label('Akreditasi Prodi'),
                 TextColumn::make('angkatan'),
-                TextColumn::make('semester'),
                 TextColumn::make('jalur_masuk'),
                 TextColumn::make('ponsel'),
                 TextColumn::make('alamat'),

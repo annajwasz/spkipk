@@ -19,6 +19,8 @@ class DatabaseSeeder extends Seeder
             MahasiswaSeeder::class,
             // SuperAdminPermissionSeeder::class,
             PermissionSeeder::class,
+            JurusanSeeder::class,
+            ProdiSeeder::class,
         ]);
     }
 }
