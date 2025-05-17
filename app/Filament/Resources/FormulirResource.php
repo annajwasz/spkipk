@@ -61,7 +61,8 @@ class FormulirResource extends Resource
                 TextColumn::make('nama'),
                 TextColumn::make('tgl_pembuatan')
                     ->label('Tanggal'),
-                TextColumn::make('kuota'),
+                TextColumn::make('kuota')
+                    ->visible(fn () => !Auth::user()->hasRole('mahasiswa')),
                 TextColumn::make('status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {

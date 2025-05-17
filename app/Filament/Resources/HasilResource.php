@@ -70,64 +70,6 @@ class HasilResource extends Resource
                     ->url(fn () => route('filament.admin.resources.hasil-penilaian.akreditasi-c'))
                     ->color('danger')
                     ->icon('heroicon-o-bookmark'),
-                    
-            //     Tables\Actions\Action::make('setKuota')
-            //         ->label('Set Kuota Penerimaan')
-            //         ->form([
-            //             TextInput::make('kuota')
-            //                 ->label('Jumlah Kuota')
-            //                 ->numeric()
-            //                 ->required()
-            //                 ->minValue(1)
-            //                 ->helperText('Masukkan jumlah kuota penerimaan. Hanya mahasiswa dengan nilai tertinggi dan berkas valid yang akan diterima.'),
-            //         ])
-            //         ->action(function (array $data): void {
-            //             DB::beginTransaction();
-            //             try {
-            //                 // Reset semua hasil terlebih dahulu
-            //                 Parameter::query()->update(['hasil' => 'Tidak Layak']);
-
-            //                 // Ambil semua data parameter yang valid dan urutkan berdasarkan total nilai
-            //                 $validParameters = Parameter::where('status', 'valid')
-            //                     ->orderBy('total_nilai', 'desc')
-            //                     ->get();
-
-            //                 $kuota = (int) $data['kuota'];
-            //                 $index = 0;
-
-            //                 foreach ($validParameters as $parameter) {
-            //                     // Gunakan update langsung ke database untuk memastikan perubahan tersimpan
-            //                     if ($index < $kuota) {
-            //                         DB::table('parameters')
-            //                             ->where('id', $parameter->id)
-            //                             ->update(['hasil' => 'Layak']);
-            //                     } elseif ($index < ($kuota + 3)) {
-            //                         DB::table('parameters')
-            //                             ->where('id', $parameter->id)
-            //                             ->update(['hasil' => 'Dipertimbangkan']);
-            //                     }
-            //                     $index++;
-            //                 }
-
-            //                 DB::commit();
-
-            //                 Notification::make()
-            //                     ->title("Berhasil mengatur kuota penerimaan untuk {$kuota} mahasiswa")
-            //                     ->success()
-            //                     ->send();
-            //             } catch (\Exception $e) {
-            //                 DB::rollBack();
-            //                 Notification::make()
-            //                     ->title('Terjadi kesalahan: ' . $e->getMessage())
-            //                     ->danger()
-            //                     ->send();
-            //             }
-            //         })
-            //         ->requiresConfirmation()
-            //         ->modalHeading('Set Kuota Penerimaan')
-            //         ->modalDescription('Apakah Anda yakin ingin mengatur kuota penerimaan? Tindakan ini akan mengubah status kelayakan semua mahasiswa.')
-            //         ->modalSubmitActionLabel('Ya, Set Kuota')
-            //         ->successNotificationTitle('Kuota berhasil diatur'),
             ])
             ->modifyQueryUsing(fn ($query) => $query->where('status', 'valid'))
             ->columns([
@@ -165,24 +107,17 @@ class HasilResource extends Resource
                     ->label('Hasil')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        'Layak' => 'success',
-                        'Dipertimbangkan' => 'warning',
-                        'Tidak Layak' => 'danger',
+                        'Diterima' => 'success',
+                        'Tidak Diterima' => 'danger',
                         default => 'gray',
-                    })
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'Layak' => 'Diterima',
-                        'Tidak Layak' => 'Tidak Diterima',
-                        default => $state,
                     }),
             ])
             ->defaultSort('total_nilai', 'desc')
             ->filters([
                 Tables\Filters\SelectFilter::make('hasil')
                     ->options([
-                        'Layak' => 'Layak',
-                        'Dipertimbangkan' => 'Dipertimbangkan',
-                        'Tidak Layak' => 'Tidak Layak',
+                        'Diterima' => 'Diterima',
+                        'Tidak Diterima' => 'Tidak Diterima',
                     ]),
             ]);
     }

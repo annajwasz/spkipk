@@ -55,6 +55,8 @@ class SubKriteriaResource extends Resource
                     ->required(),
                 TextInput::make('bobot')
                     ->numeric()
+                    ->disabled()
+                    ->helperText('Bobot akan dihitung otomatis oleh sistem')
                     // ->required(),
             ]);
     }

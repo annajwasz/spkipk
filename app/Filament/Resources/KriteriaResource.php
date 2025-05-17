@@ -36,6 +36,8 @@ class KriteriaResource extends Resource
                 TextInput::make('prioritas')
                     ->required(),
                 TextInput::make('bobot')
+                    ->disabled()
+                    ->helperText('Bobot akan dihitung otomatis oleh sistem')
                     // ->required(),
             ]);
     }

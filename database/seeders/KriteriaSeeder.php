@@ -17,22 +17,27 @@ class KriteriaSeeder extends Seeder
             [
                 'nama' => 'Kepemilikan KIP',
                 'prioritas' => 1,
-                'bobot' => 0.5208333,
+                'bobot' => 0.4566667,
+            ],
+            [
+                'nama' => 'Terdata DTKS',
+                'prioritas' => 2,
+                'bobot' => 0.2566667,
             ],
             [
                 'nama' => 'Tingkatan Desil',
-                'prioritas' => 2,
-                'bobot' => 0.2708333,
+                'prioritas' => 3,
+                'bobot' => 0.1566667,
             ],
             [
                 'nama' => 'Kondisi Ekonomi',
-                'prioritas' => 3,
-                'bobot' => 0.1458333,
+                'prioritas' => 4,
+                'bobot' => 0.09,
             ],
             [
                 'nama' => 'Status Orang Tua',
-                'prioritas' => 4,
-                'bobot' => 0.0625000,
+                'prioritas' => 5,
+                'bobot' => 0.04,
             ],
         ];
 

@@ -117,6 +117,16 @@ class parameter extends Model
                         }
                         break;
 
+                    case 'Terdata DTKS':
+                        // Ambil SubKriteria berdasarkan status terdata DTKS
+                        $subKriteria = SubKriteria::where('kriteria_id', $kriteria->id)
+                            ->where('nama', $parameter->terdata_dtks)
+                            ->first();
+                        if ($subKriteria) {
+                            $totalNilai += $subKriteria->bobot;
+                        }
+                        break;
+
                     case 'Kondisi Ekonomi':
             // Hitung jumlah berkas yang diupload
             $berkasCount = 0;

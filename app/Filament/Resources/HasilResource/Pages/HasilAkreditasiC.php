@@ -39,7 +39,7 @@ class HasilAkreditasiC extends ListRecords
                             // Reset hasil untuk akreditasi C
                             Parameter::whereHas('mahasiswa.prodi', function ($query) {
                                 $query->where('akreditasi', 'C');
-                            })->update(['hasil' => 'Tidak Layak']);
+                            })->update(['hasil' => 'Tidak Diterima']);
 
                             // Ambil data parameter yang valid dengan akreditasi C
                             $validParameters = Parameter::where('status', 'valid')
@@ -56,11 +56,7 @@ class HasilAkreditasiC extends ListRecords
                                 if ($index < $kuota) {
                                     DB::table('parameters')
                                         ->where('id', $parameter->id)
-                                        ->update(['hasil' => 'Layak']);
-                                } elseif ($index < ($kuota + 3)) {
-                                    DB::table('parameters')
-                                        ->where('id', $parameter->id)
-                                        ->update(['hasil' => 'Dipertimbangkan']);
+                                        ->update(['hasil' => 'Diterima']);
                                 }
                                 $index++;
                             }
@@ -140,9 +136,8 @@ class HasilAkreditasiC extends ListRecords
                     ->label('Hasil')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        'Layak' => 'success',
-                        'Dipertimbangkan' => 'warning',
-                        'Tidak Layak' => 'danger',
+                        'Diterima' => 'success',
+                        'Tidak Diterima' => 'danger',
                         default => 'gray',
                     }),
             ])
@@ -150,9 +145,8 @@ class HasilAkreditasiC extends ListRecords
             ->filters([
                 \Filament\Tables\Filters\SelectFilter::make('hasil')
                     ->options([
-                        'Layak' => 'Layak',
-                        'Dipertimbangkan' => 'Dipertimbangkan',
-                        'Tidak Layak' => 'Tidak Layak',
+                        'Diterima' => 'success',
+                        'Tidak Diterima' => 'danger',
                     ]),
             ]);
     }

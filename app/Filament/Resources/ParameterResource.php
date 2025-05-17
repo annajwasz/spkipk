@@ -38,6 +38,11 @@ class ParameterResource extends Resource
 
     protected static ?string $title = 'Validasi Data';
 
+    public static function canCreate(): bool
+    {
+        return false;
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -304,9 +309,8 @@ class ParameterResource extends Resource
                 //     ->label('Hasil')
                 //     ->badge()
                 //     ->color(fn (string $state): string => match ($state) {
-                //         'Layak' => 'success',
-                //         'Dipertimbangkan' => 'warning',
-                //         'Tidak Layak' => 'danger',
+                //         'Diterima' => 'success',
+                //         'Tidak Diterima' => 'danger',
                 //         default => 'gray',
                 //     }),
                     
@@ -375,6 +379,12 @@ class ParameterResource extends Resource
                         'belum_validasi' => 'Belum Validasi',
                         'valid' => 'Valid',
                         'tidak_valid' => 'Tidak Valid',
+                    ]),
+
+                Tables\Filters\SelectFilter::make('hasil')
+                    ->options([
+                        'Diterima' => 'Diterima',
+                        'Tidak Diterima' => 'Tidak Diterima',
                     ]),
             ])
             ->actions([
@@ -590,7 +600,6 @@ class ParameterResource extends Resource
     {
         return [
             'index' => Pages\ListParameters::route('/'),
-            'create' => Pages\CreateParameter::route('/create'),
             'edit' => Pages\EditParameter::route('/{record}/edit'),
         ];
     }

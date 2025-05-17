@@ -75,7 +75,7 @@ return new class extends Migration
             $table->decimal('total_nilai', 10, 7)->default(0);
             
             // Hasil penilaian
-            $table->enum('hasil', ['Layak', 'Dipertimbangkan', 'Tidak Layak'])->nullable();
+            $table->enum('hasil', ['Diterima', 'Tidak Diterima'])->nullable();
             
             
             $table->timestamps();
