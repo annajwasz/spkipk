@@ -26,6 +26,10 @@ class KriteriaResource extends Resource
     // protected static ?string $pluralModelLabel = 'Kriteria';
     protected static ?string $slug = 'kriteria';
     protected static ?int $navigationSort = 1;
+    public static function canCreate(): bool
+    {
+        return false;
+    }
 
     public static function form(Form $form): Form
     {

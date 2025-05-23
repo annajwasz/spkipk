@@ -154,10 +154,8 @@
                     <td>{{ $item->mahasiswa->prodi->akreditasi }}</td>
                     <td>{{ number_format($item->total_nilai, 4) }}</td>
                     <td>
-                        @if($item->hasil == 'Layak')
+                        @if($item->hasil == 'Diterima')
                             <span class="badge success">Diterima</span>
-                        @elseif($item->hasil == 'Dipertimbangkan')
-                            <span class="badge warning">Dipertimbangkan</span>
                         @else
                             <span class="badge danger">Tidak Diterima</span>
                         @endif

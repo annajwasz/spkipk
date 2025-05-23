@@ -32,6 +32,76 @@ class HasilResource extends Resource
     {
         return $table
             ->headerActions([
+                Tables\Actions\Action::make('exportExcel')
+                    ->label('Export Excel')
+                    ->icon('heroicon-o-table-cells')
+                    ->color('success')
+                    ->action(function () {
+                        $data = Parameter::with(['mahasiswa.jurusan', 'mahasiswa.prodi'])
+                            ->where('status', 'valid')
+                            ->orderBy('total_nilai', 'desc')
+                            ->get();
+
+                        $fileName = 'hasil-penilaian-' . now()->format('Y-m-d') . '.xlsx';
+                        
+                        return response()->streamDownload(function () use ($data) {
+                            $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+                            $sheet = $spreadsheet->getActiveSheet();
+                            
+                            // Set header
+                            $sheet->setCellValue('A1', 'No');
+                            $sheet->setCellValue('B1', 'Nama Mahasiswa');
+                            $sheet->setCellValue('C1', 'Jurusan');
+                            $sheet->setCellValue('D1', 'Program Studi');
+                            $sheet->setCellValue('E1', 'Akreditasi');
+                            $sheet->setCellValue('F1', 'Total Nilai');
+                            $sheet->setCellValue('G1', 'Hasil');
+                            
+                            // Isi data
+                            $row = 2;
+                            foreach ($data as $index => $item) {
+                                $sheet->setCellValue('A' . $row, $index + 1);
+                                $sheet->setCellValue('B' . $row, $item->mahasiswa->nama);
+                                $sheet->setCellValue('C' . $row, $item->mahasiswa->jurusan->nama);
+                                $sheet->setCellValue('D' . $row, $item->mahasiswa->prodi->nama);
+                                $sheet->setCellValue('E' . $row, $item->mahasiswa->prodi->akreditasi);
+                                $sheet->setCellValue('F' . $row, number_format($item->total_nilai, 4));
+                                $sheet->setCellValue('G' . $row, $item->hasil);
+                                $row++;
+                            }
+                            
+                            // Auto size columns
+                            foreach (range('A', 'G') as $col) {
+                                $sheet->getColumnDimension($col)->setAutoSize(true);
+                            }
+                            
+                            // Set header style
+                            $headerStyle = [
+                                'font' => ['bold' => true],
+                                'alignment' => ['horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER],
+                                'borders' => [
+                                    'allBorders' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN],
+                                ],
+                                'fill' => [
+                                    'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                                    'startColor' => ['rgb' => 'E2E8F0'],
+                                ],
+                            ];
+                            $sheet->getStyle('A1:G1')->applyFromArray($headerStyle);
+                            
+                            // Set data style
+                            $dataStyle = [
+                                'borders' => [
+                                    'allBorders' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN],
+                                ],
+                            ];
+                            $sheet->getStyle('A2:G' . ($row - 1))->applyFromArray($dataStyle);
+                            
+                            $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+                            $writer->save('php://output');
+                        }, $fileName);
+                    }),
+
                 Tables\Actions\Action::make('exportPdf')
                     ->label('Export PDF')
                     ->icon('heroicon-o-document-arrow-down')

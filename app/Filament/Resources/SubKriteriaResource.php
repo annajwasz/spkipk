@@ -35,6 +35,10 @@ class SubKriteriaResource extends Resource
     protected static ?string $slug = 'sub-kriteria';
 
     protected static ?int $navigationSort = 2;
+    public static function canCreate(): bool
+    {
+        return false;
+    }
 
     public static function form(Form $form): Form
     {

@@ -28,6 +28,11 @@ class MahasiswaResource extends Resource
     protected static ?string $slug = 'mahasiswa';
     protected static ?int $navigationSort = 3;//buat urutannya
     
+    public static function canCreate(): bool
+    {
+        return false;
+    }
+    
     public static function form(Form $form): Form
     {
         return $form

@@ -114,23 +114,23 @@ class ProgresDataPage extends Page
         $mahasiswa = Mahasiswa::with(['prodi', 'jurusan'])->where('user_id', $user->id)->first();
         $data = $mahasiswa ? Parameter::where('mahasiswa_id', $mahasiswa->id)->first() : null;
 
-        if ($data && $data->status === 'valid' && $data->hasil === 'Diterima') {
-            return [
-                Action::make('exportSurat')
-                    ->label('Download Surat Keterangan')
-                    ->icon('heroicon-o-document-arrow-down')
-                    ->action(function () use ($mahasiswa) {
-                        $pdf = PDF::loadView('surat.keterangan', [
-                            'mahasiswa' => $mahasiswa,
-                            'tanggal' => now()->format('Y-m-d'),
-                        ]);
+        // if ($data && $data->status === 'valid' && $data->hasil === 'Diterima') {
+        //     return [
+        //         Action::make('exportSurat')
+        //             ->label('Download Surat Keterangan')
+        //             ->icon('heroicon-o-document-arrow-down')
+        //             ->action(function () use ($mahasiswa) {
+        //                 $pdf = PDF::loadView('surat.keterangan', [
+        //                     'mahasiswa' => $mahasiswa,
+        //                     'tanggal' => now()->format('Y-m-d'),
+        //                 ]);
 
-                        return response()->streamDownload(function () use ($pdf) {
-                            echo $pdf->output();
-                        }, 'surat-keterangan-kipk.pdf');
-                    })
-            ];
-        }
+        //                 return response()->streamDownload(function () use ($pdf) {
+        //                     echo $pdf->output();
+        //                 }, 'surat-k`eterangan-kipk.pdf');
+        //             })
+        //     ];
+        // }
 
         return [];
     }
